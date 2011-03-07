@@ -1,0 +1,27 @@
+div.entity {overflow:hidden;margin:10px 0;background:#ddd;padding:4px;}
+div.entity_label {float:left;width:25%;font-size:12px;color:#444;}
+div.entity_field {float:left;width:70%;}
+#namespaces {overflow:auto;max-height:300px;}
+#namespaces h3 {margin:10px 0;}
+#namespaces h3 a {text-decoration:none;color:#666;font-size:14px;}
+#left h4 {background:#ccc;padding:4px 0;text-align:center;font-size:12px;color:#333;}
+#available_languages {height:250px;overflow:auto;}
+#available_languages ul li {margin:4px 0;font-size:11px;}
+#available_languages ul li a {padding:4px 4px 4px 20px;text-decoration:none;display:block;}
+#available_languages ul li a:hover {background:#ddd;}
+#available_languages ul li a.current {background:#ccc;}
+#Form_CreateTranslationForm .field {float:none;width:90%;margin:10px 0 0 10px;border-bottom:1px solid #999;padding:4px 0;}
+#Form_CreateTranslationForm  .field select {width:100% !important;float:none;display:block;}
+#Form_CreateTranslationForm .field label.left {display:block;float:none;margin:0;font-size:11px;color:#333;}
+#Form_CreateTranslationForm .Actions {text-align:center;margin:10px auto;}
+#utility_bar {height:75px;background:#ccc;position:relative;padding:0 12px;}
+#utility_bar h2 {width:35%;line-height:70px;color:#444;float:left;}
+#namespace_dropdown {width:15%;float:left;line-height:70px;}
+#Namespace {font-size:12px;margin:0;}
+#Namespace label {float:none;margin:0;display:none;}
+#search {width:30%;float:right;font-size:16px;margin-top:20px;}
+#search input {width:150px;padding:6px 4px;border:1px solid #999;font-size:16px;color:#666;}
+#search label {margin-right:10px;font-size:12px;}
+#Form_TranslationForm .actions {text-align:left;margin:10px 0;float:left;}
+#ajax-loader {display:none;position:absolute;top:50%;left:50%;margin-left:-16px;z-index:999;}
+#message {width:200px;font-size:18px;display:none;border: 1px solid;margin: 10px 0px;padding:5px 10px;color: #4F8A10;background-color: #DFF2BF;position:absolute;bottom:10px;left:10px;}
