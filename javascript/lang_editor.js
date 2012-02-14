@@ -1,21 +1,33 @@
 (function($) {
 $(function() {
 	
-	$('body').ajaxStart(function() {$('#ajax-loader').show()});
-	$('body').ajaxStop(function() {$('#ajax-loader').hide()});
+	$('body').ajaxStart(function() {$('#ajax-loader').show();});
+	$('body').ajaxStop(function() {$('#ajax-loader').hide();});
 	
 	$('#available_languages ul li a').live("click",function() {
 		$t = $(this);
 		$('#translations').load($t.attr('href'));
+		$('#available_modules').load($t.attr('href').replace("show", "updatemodules"));
+		$('#available_languages').load($t.attr('href').replace("show", "updatelanguages"));
+		$('#create_translation_form').load($t.attr('href').replace("show", "createtranslationform"));
 		return false;
 	});
 	
+	$('#available_modules ul li a').live("click",function() {
+		$t = $(this);
+		$('#translations').load($t.attr('href'));
+		$('#available_modules').load($t.attr('href').replace("show", "updatemodules"));
+		$('#available_languages').load($t.attr('href').replace("show", "updatelanguages"));
+		$('#create_translation_form').load($t.attr('href').replace("show", "updatecreateform"));
+		return false;
+	});
+
 	$('#translations h3 a').livequery("click",function() {
 		$t = $(this);
 		$t.parents('h3').next('.namespace').slideDown();		
 	});
 	
-	$('#Form_CreateTranslationForm').submit(function() {
+	$('#Form_CreateTranslationForm').live("submit",function() {
 		var $t = $(this);
 		var new_lang = $('#Form_CreateTranslationForm_LanguageTo').val();
 		$.post(
@@ -37,7 +49,7 @@ $(function() {
 			function(data) {
 				$('#message').show().html(data);
 				setTimeout(function() {
-					$('#message').fadeOut()
+					$('#message').fadeOut();
 				},3000);
 			}
 		);
