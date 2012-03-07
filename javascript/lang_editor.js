@@ -29,13 +29,21 @@ $(function() {
 	
 	$('#Form_CreateTranslationForm').live("submit",function() {
 		var $t = $(this);
+		var old_lang = $('#Form_CreateTranslationForm_LanguageFrom').val();
 		var new_lang = $('#Form_CreateTranslationForm_LanguageTo').val();
 		$.post(
 			$t.attr('action'),
 			$t.serialize(),
 			function(data) {
-				$('#available_languages').html(data);
-				$('#'+new_lang).click();
+				// display message
+				$('#message').show().html(data);
+				setTimeout(function() {
+					$('#message').fadeOut();
+				},3000);
+				// reload language list
+				$('#available_languages').load($('#'+old_lang).attr('href').replace("show", "updatelanguages"), function() {
+					$('#'+new_lang).click();
+				});
 			}
 		);
 		return false;
