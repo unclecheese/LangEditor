@@ -9,7 +9,7 @@ $(function() {
 		$('#translations').load($t.attr('href'));
 		$('#available_modules').load($t.attr('href').replace("show", "updatemodules"));
 		$('#available_languages').load($t.attr('href').replace("show", "updatelanguages"));
-		$('#create_translation_form').load($t.attr('href').replace("show", "createtranslationform"));
+		$('#create_translation_form').load($t.attr('href').replace("show", "updatecreateform"));
 		return false;
 	});
 	
