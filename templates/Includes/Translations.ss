@@ -1,5 +1,5 @@
 <div id="utility_bar">
-	<h2><% _t('LangEditor.EDITING','Editing') %>: $SelectedLanguage [$SelectedLocale]</h2>
+	<h2><% _t('LangEditor.EDITING','Editing') %>: $SelectedModule, $SelectedLanguage [$SelectedLocale]</h2>
 	<div id="namespace_dropdown">$NamespaceDropdown.FieldHolder</div>
 	<div id="search"><label><% _t('LangEditor.SEARCH','Search') %></label><input type="text" value="" /></div>	
 </div>
@@ -19,6 +19,7 @@
 			 <% end_control %>
 		 </div>
 		 <input type="hidden" name="SecurityID" value="$SecurityID" />
+		 <input type="hidden" name="Module" value="$SelectedModule" />
 		 <div class="actions">
 		 	<% control TranslationForm %>
 		 	<% control Actions %>
