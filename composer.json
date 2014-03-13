@@ -1,0 +1,14 @@
+{
+	"name": "silverstripe/langeditor",
+	"description": "CMS module to edit static language files.",
+	"type": "silverstripe-module",
+	"keywords": ["silverstripe", "languages"],
+	"authors": [{
+		"name": "Uncle Cheese",
+		"email": "unclecheese@leftandmain.com"
+	}],
+	"require": {
+		"silverstripe/framework": "3.0.*",
+	    "silverstripe/cms": "3.0.*"
+	}
+}

@@ -1,94 +1,73 @@
 (function($) {
-$(function() {
+	$.entwine.warningLevel = $.entwine.WARN_LEVEL_BESTPRACTISE;
+	$.entwine('ss', function($) {
 	
-	$('body').ajaxStart(function() {$('#ajax-loader').show();});
-	$('body').ajaxStop(function() {$('#ajax-loader').hide();});
-	
-	$('#available_languages ul li a').live("click",function() {
-		$t = $(this);
-		$('#translations').load($t.attr('href'));
-		$('#available_modules').load($t.attr('href').replace("show", "updatemodules"));
-		$('#available_languages').load($t.attr('href').replace("show", "updatelanguages"));
-		$('#create_translation_form').load($t.attr('href').replace("show", "updatecreateform"));
-		return false;
-	});
-	
-	$('#available_modules ul li a').live("click",function() {
-		$t = $(this);
-		$('#translations').load($t.attr('href'));
-		$('#available_modules').load($t.attr('href').replace("show", "updatemodules"));
-		$('#available_languages').load($t.attr('href').replace("show", "updatelanguages"));
-		$('#create_translation_form').load($t.attr('href').replace("show", "updatecreateform"));
-		return false;
-	});
-
-	$('#translations h3 a').livequery("click",function() {
-		$t = $(this);
-		$t.parents('h3').next('.namespace').slideDown();		
-	});
-	
-	$('#Form_CreateTranslationForm').live("submit",function() {
-		var $t = $(this);
-		var old_lang = $('#Form_CreateTranslationForm_LanguageFrom').val();
-		var new_lang = $('#Form_CreateTranslationForm_LanguageTo').val();
-		$.post(
-			$t.attr('action'),
-			$t.serialize(),
-			function(data) {
-				// display message
-				$('#message').show().html(data);
-				setTimeout(function() {
-					$('#message').fadeOut();
-				},3000);
-				// reload language list
-				$('#available_languages').load($('#'+old_lang).attr('href').replace("show", "updatelanguages"), function() {
-					$('#'+new_lang).click();
-				});
+		$('#Form_CreateTranslationForm').entwine({
+			onsubmit: function(){
+				var $t = $(this);
+				var old_lang = $('#Form_CreateTranslationForm_LanguageFrom').val();
+				var new_lang = $('#Form_CreateTranslationForm_LanguageTo').val();
+				$.post(
+					$t.attr('action'),
+					$t.serialize(),
+					function(data) {
+						// display message
+						statusMessage(decodeURIComponent(data), 'good');
+						// reload language list
+						var url = $('#'+old_lang).attr('href').replace('/'+old_lang+'/', '/'+new_lang+'/');
+						window.location = $.path.makeUrlAbsolute(url, $('base').attr('href'));
+					}
+				);
+				return false;
 			}
-		);
-		return false;
-	});
-	
-	$('#Form_TranslationForm').live("submit",function() {
-		$t = $(this);
-		$.post(
-			$t.attr('action'),
-			$t.serialize(),
-			function(data) {
-				$('#message').show().html(data);
-				setTimeout(function() {
-					$('#message').fadeOut();
-				},3000);
+		});
+		
+		$('#Form_TranslationForm').entwine({
+			onsubmit: function(e) {
+				$('.cms-content').addClass('loading');
+				$t = $(this);
+				$.post(
+					$t.attr('action'),
+					$t.serialize(),
+					function(data) {
+						$('.cms-content').removeClass('loading');
+						statusMessage(data, 'good');
+						var url = $('#available_languages a.current').first().attr('href');
+						window.location = $.path.makeUrlAbsolute(url, $('base').attr('href'));
+					}
+				);
+				return false;
 			}
-		);
-		return false;
-	});
-	
-	$('#Namespace').live("change", function() {
-		if($(this).val().length) {
-			$('.namespace').hide().filter('#namespace-'+$(this).val()).show();
-		}
-		else {
-			$('.namespace').show();
-		}
-	});
-
-	var timeout = false;
-
-	$('#search input').live("keyup",function() {
-		if(timeout) window.clearTimeout(timeout);
-		s = $(this).val();		
-		timeout = window.setTimeout(function() {
-			$('.entity').hide();
-			$('.entity').each(function() {
-				reg = new RegExp(s,"i");
-				if($(this).find('.entity_label').text().match(reg) || $(this).find('.entity_field input').val().match(reg)) {
-					$(this).show();
+		});
+		
+		$('#Namespace').entwine({
+			onchange: function(){
+				if($(this).val().length > 0) {
+					$('.namespace').hide();
+					$('#namespace-'+$(this).val()).show();
+				} else {
+					$('.namespace').show();
 				}
-			});		
-		},150);
-				
-	});
+			}
+		});
 	
-});
+		var timeout = false;
+	
+		$('#translationsearch input').entwine({
+			onkeyup: function(){
+				if(timeout) window.clearTimeout(timeout);
+				s = $(this).val();		
+				timeout = window.setTimeout(function() {
+					$('.entity').hide();
+					$('.entity').each(function() {
+						reg = new RegExp(s,"i");
+						if($(this).find('.entity_label').text().match(reg) || $(this).find('.entity_field input').val().match(reg)) {
+							$(this).show();
+						}
+					});		
+				},150);
+			}					
+		});
+		
+    });
 })(jQuery);
