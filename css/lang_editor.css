@@ -1,32 +1,120 @@
-div.entity {overflow:hidden;margin:10px 0;background:#ddd;padding:4px;}
-div.entity_label {float:left;width:25%;font-size:12px;color:#444;}
-div.entity_field {float:left;width:70%;}
-#namespaces {overflow:auto;max-height:300px;}
-#namespaces h3 {margin:10px 0;}
-#namespaces h3 a {text-decoration:none;color:#666;font-size:14px;}
-#left h4 {background:#ccc;padding:4px 0;text-align:center;font-size:12px;color:#333;}
-#available_languages {height:80px;overflow:auto;}
-#available_modules {height:230px;overflow:auto;}
+/* header */
+.cms-content-header .cms-content-header-filter {
+    float: right;
+    line-height: 40px;
+    padding-right: 24px;
+}
+#namespace_dropdown {
+	float: right;
+	margin: 0 0 0 2em;
+}
+#Namespace {
+	margin: 0;
+	padding: 2px;
+}
+#Namespace label {
+    float: none;
+    margin: 0;
+    display: none;
+}
+#translationsearch {
+    float: right;
+    margin: 0 0 0 2em;
+}
+#translationsearch input {
+    padding: 2px;
+    border: 1px solid #999;
+    color: #666;
+}
+#translationsearch label {
+    margin-right: 10px;
+    font-size: 12px;
+}
+
+/* filter west */
+#cms-content-tools-LangEditor h4 {
+	margin: 1em 0 0.25em;
+}
+#available_languages {
+	height: 80px;
+	overflow: auto;
+	border: 1px solid #ddd;
+}
+#available_modules {
+	height: 230px;
+	overflow: auto;
+	border: 1px solid #ddd;
+}
 #available_languages ul li,
-#available_modules ul li {margin:2px 0;font-size:11px;}
+#available_modules ul li {
+	margin: 2px 0;
+	font-size: 11px;
+}
 #available_languages ul li a,
-#available_modules ul li a {padding:2px 2px 2px 20px;text-decoration:none;display:block;}
+#available_modules ul li a {
+	padding: 2px 2px 2px 8px;
+	text-decoration: none;
+	display: block;
+}
 #available_languages ul li a:hover,
-#available_modules ul li a:hover {background:#ddd;}
+#available_modules ul li a:hover {
+	background: #ddd;
+}
 #available_languages ul li a.current,
-#available_modules ul li a.current {background:#ccc;}
-#Form_CreateTranslationForm .field {float:none;width:90%;margin:5px 0 0 5px;padding:2px 0;}
-#Form_CreateTranslationForm  .field select {width:100% !important;float:none;display:block;}
-#Form_CreateTranslationForm .field label.left {display:block;float:none;margin:0;font-size:11px;color:#333;}
-#Form_CreateTranslationForm .Actions {text-align:center;margin:5px auto;}
-#utility_bar {height:75px;background:#ccc;position:relative;padding:0 12px;}
-#utility_bar h2 {width:50%;line-height:70px;color:#444;float:left;}
-#namespace_dropdown {width:25%;float:left;line-height:70px;}
-#Namespace {font-size:12px;margin:0;}
-#Namespace label {float:none;margin:0;display:none;}
-#search {width:25%;float:right;font-size:16px;margin-top:20px;}
-#search input {width:150px;padding:6px 4px;border:1px solid #999;font-size:16px;color:#666;}
-#search label {margin-right:10px;font-size:12px;}
-#Form_TranslationForm .actions {text-align:left;margin:10px 0;float:left;}
-#ajax-loader {display:none;position:absolute;top:50%;left:50%;margin-left:-16px;z-index:999;}
-#message {width:200px;font-size:18px;display:none;border: 1px solid;margin: 10px 0px;padding:5px 10px;color: #4F8A10;background-color: #DFF2BF;position:absolute;bottom:10px;left:10px;}
+#available_modules ul li a.current {
+	background: #ccc;
+}
+#Form_CreateTranslationForm .field {
+	float: none;
+	width: 90%;
+	margin: 0;
+	padding: 2px 0;
+}
+#Form_CreateTranslationForm  .field select {
+	width: 100% !important;
+	float: none;
+	display: block;
+}
+#Form_CreateTranslationForm .field label.left {
+	display: block;
+	float: none;
+	margin: 0;
+	padding: 0;
+	font-size: 11px;
+	color: #333;
+}
+#Form_CreateTranslationForm .Actions {
+	text-align: center;
+	margin: 5px auto;
+}
+
+/* edit form */
+div.entity {
+	border-bottom: 1px solid #ddd;
+	overflow: hidden;
+	padding: 2px;
+}
+div.entity_label {
+	float: left;
+	width: 25%;
+	margin-top: 3px;
+}
+div.entity_field {
+	float: left;
+	width: 70%;
+}
+div.entity_field input {
+	width: 100%;
+}
+#namespaces {
+	overflow: auto;
+	padding: 1em;
+}
+#namespaces h3 {
+	margin: 10px 0;
+}
+#namespaces h3 a {
+	text-decoration: none;
+	color: #666;
+	font-size: 14px;
+}

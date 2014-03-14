@@ -4,7 +4,9 @@ class LangEditor extends LeftAndMain {
 
 	static $menu_title = "Lang Editor";
 	
-	static $url_segment = "lang-editor";
+	static $url_segment = "langeditor";
+	
+	static $menu_priority = -0.6;
 	
 	static $allowed_actions = array (
 		'TranslationForm',
@@ -18,24 +20,41 @@ class LangEditor extends LeftAndMain {
 	);
 	
 	static $exclude_modules = array();
+	static $exclude_locales = array();
 	
 	static $currentLocale = "";
 	static $currentModule = "";
 	
-	public static function lang_dir($module) {
+/*	public function getResponseNegotiator() {
+		$negotiator = parent::getResponseNegotiator();
+		$controller = $this;
+		// Register a new callback
+		$negotiator->setCallback('ModuleList', function() use(&$controller) {
+			return $controller->renderWith($controller->getTemplatesWithSuffix('_ModuleList'));
+		});
+		$negotiator->setCallback('LanguageList', function() use(&$controller) {
+			return $controller->renderWith($controller->getTemplatesWithSuffix('_LanguageList'));
+		});
+		$negotiator->setCallback('CreateTranslationForm', function() use(&$controller) {
+			return $controller->renderWith($controller->getTemplatesWithSuffix('_CreateTranslationForm'));
+		});
+		return $negotiator;
+	}
+*/	
+	public static function get_lang_dir($module) {
 		return BASE_PATH.DIRECTORY_SEPARATOR.$module.DIRECTORY_SEPARATOR."lang";
 	}
 	
-	public static function lang_file($module, $lang) {
-		return self::lang_dir($module).DIRECTORY_SEPARATOR."{$lang}.php";	
-	}
-	
-	public static function clean_namespace($str) {
-		return str_replace('.','___',$str);
+	public static function get_lang_file($module, $lang) {
+		$file = self::get_lang_dir($module).DIRECTORY_SEPARATOR."{$lang}.yml";
+//		if(!file_exists($file)) user_error("$file does not exist!");
+//		if(!is_readable($file)) user_error("$file is not readable!");
+//		if(!is_writable($file)) user_error("$file is not writable!");
+		return $file;
 	}
 	
 	public static function check_module_existing_lang() {
-		if (!is_file(self::lang_file(self::$currentModule, self::$currentLocale))) {
+		if (!is_file(self::get_lang_file(self::$currentModule, self::$currentLocale))) {
 			$langs = self::getLanguages();
 			self::$currentLocale = $langs->First()->Locale;
 		}
@@ -45,7 +64,7 @@ class LangEditor extends LeftAndMain {
 		if($str = i18n::get_lang_from_locale($locale)) {
 			if(stristr($str,"_") !== false) {
 				$parts = explode("_", $str);
-				return $parts[0]."-".strtoupper($parts[1]);
+				return $parts[0];
 			}
 			return $str;
 		}
@@ -54,30 +73,149 @@ class LangEditor extends LeftAndMain {
 	
 	public function init() {
 		parent::init();
-		Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
-		Requirements::javascript(THIRDPARTY_DIR."/jquery-livequery/jquery.livequery.js");
-
-		Requirements::javascript("lang_editor/javascript/lang_editor.js");
-		Requirements::css("lang_editor/css/lang_editor.css");
+		
+		$r = $this->request; //Controller::curr()->getRequest();
+		self::$currentLocale = i18n::get_locale();
+		self::$currentModule = project();
+		if($r && $r->param('ID') && $r->param('OtherID')) {
+			self::$currentLocale = $r->param('ID');
+			self::$currentModule = str_replace('$', DIRECTORY_SEPARATOR, $r->param('OtherID'));
+		}
+		self::check_module_existing_lang();
+		
 	}
 	
-	public function getLanguages() {
-		$langs = new DataObjectSet();
-		if($files = glob(self::lang_dir(self::$currentModule).DIRECTORY_SEPARATOR."*.php")) {
-			foreach($files as $file) {
-				$label = basename($file,".php");
-					$langs->push(new ArrayData(array(
-						'Link' => isset($this) ? $this->Link("show/$label/".str_replace(DIRECTORY_SEPARATOR, '$', self::$currentModule)): '',
-						'Locale' => $label,
-						'Name' => i18n::get_language_name(self::get_lang_from_locale($label))
-					)));
+/*	public function LinkModuleList() {
+		return Controller::join_links(
+			$this->Link(),
+			'updatemodules',
+			self::$currentLocale,
+			self::$currentModule
+		);
+	}
+	
+	public function LinkLanguageList() {
+		return Controller::join_links(
+			$this->Link(),
+			'updatelanguages',
+			self::$currentLocale,
+			self::$currentModule
+		);
+	}
+	
+	public function LinkCreateTranslationForm() {
+		return Controller::join_links(
+			$this->Link(),
+			'updatecreateform',
+			self::$currentLocale,
+			self::$currentModule
+		);
+	}
+*/	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public function TranslationForm($id = null, $fields = null) {
+		$form = new Form(
+			$this, 
+			"TranslationForm", 
+			new FieldList(), 
+			new FieldList(
+				new FormAction('doSave', _t('LangEditor.SAVE','Save'))
+			)
+		);
+		$form->addExtraClass('cms-edit-form');
+		$form->addExtraClass('center ' . $this->BaseCSSClasses());
+		$form->setTemplate($this->getTemplatesWithSuffix('_TranslationForm'));
+		$form->setAttribute('data-pjax-fragment', 'CurrentForm');
+		$form->Namespaces = $this->Namespaces;
+		$form->SelectedModule = self::$currentModule;
+		$form->unsetValidator();
+		return $form;
+	}
+	
+	public function loadTranslationData() {
+		$namespaces = new ArrayList();
+		$lang_file = self::get_lang_file(self::$currentModule, self::$currentLocale);
+				
+		// Use the Zend copy of this script to prevent class conflicts when RailsYaml is included
+		require_once 'thirdparty/zend_translate_railsyaml/library/Translate/Adapter/thirdparty/sfYaml/lib/sfYaml.php';
+		
+		$temp_lang = sfYaml::load($lang_file);
+		
+		$map = array();
+		if(is_array($temp_lang) && isset($temp_lang[self::$currentLocale])) {
+			foreach($temp_lang[self::$currentLocale] as $namespace => $array_of_entities) {
+				$map[$namespace] = $namespace;
+				$entities = new ArrayList();
+				if(is_array($array_of_entities)) {
+					foreach($array_of_entities as $entity => $str) {
+						if (is_array($str)) {
+							$str = $str[0];
+						}
+						$entities->push(new ArrayData(array(
+							'Entity' => $entity,
+							'EntityField' => new TextField("t[".self::$currentLocale."][$namespace][$entity]","",stripslashes($str)),
+							'Namespace' => $namespace
+						)));
+					}
+				}
+				
+				$namespaces->push(new ArrayData(array(
+					'Namespace' => $namespace,
+					'Entities' => $entities
+				)));
 			}
 		}
-		return $langs;		
+		
+		$this->Namespaces = $namespaces;
+		$this->NamespaceDropdownOptions = $map;
+
+	}
+	
+	public function Breadcrumbs($unlinked = false) {
+		$items = parent::Breadcrumbs(true);
+		$items->push(
+			new ArrayData(array(
+				'Title' => _t('LangEditor.EDITING','Editing').": ".self::$currentModule.", ".self::$currentLocale,
+				'Link' => false
+			))
+		);
+		return $items;
+	}
+	
+	
+	public static function getLanguages() {
+		$langs = new ArrayList();
+		if($files = glob(self::get_lang_dir(self::$currentModule).DIRECTORY_SEPARATOR."*.yml")) {
+			foreach($files as $file) {
+				$label = basename($file,".yml");
+				if (!in_array($label, self::$exclude_locales)) {
+					$langs->push(new ArrayData(array(
+						'Link' => Director::baseURL().'admin/'.self::$url_segment.'/show/'.$label.'/'.str_replace(DIRECTORY_SEPARATOR, '$', self::$currentModule),
+						'Locale' => $label,
+						'Name' => i18n::get_language_name(self::get_lang_from_locale($label)),
+						'Current' => $label == self::$currentLocale ? true : false
+					)));
+				}
+			}
+		}
+		return $langs;
 	}
 	
 	public function getModules() {
-		$modules = new DataObjectSet();
+		$modules = new ArrayList();
 		
 		$folders = scandir(BASE_PATH);
 		$themeFolders = array();
@@ -100,6 +238,7 @@ class LangEditor extends LeftAndMain {
 			unset($folders[$themesInd]);
 		}
 		$folders = array_merge($folders, $themeFolders);
+		natcasesort($folders);
 				
 		foreach($folders as $folder) {
 			// Only search for calls in folder with a _config.php file  
@@ -109,7 +248,7 @@ class LangEditor extends LeftAndMain {
 				&& is_dir(BASE_PATH.DIRECTORY_SEPARATOR."$folder")
 				&& (
 					is_file(BASE_PATH.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR."_config.php") 
-					&& file_exists(BASE_PATH.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR."lang") 
+					&& file_exists(BASE_PATH.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR."lang")
 				) || (
 					substr($folder,0,7) == ('themes'.DIRECTORY_SEPARATOR)
 					&& file_exists(BASE_PATH.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR."lang")
@@ -119,46 +258,37 @@ class LangEditor extends LeftAndMain {
 			
 			$modules->push(new ArrayData(array(
 				'Link' => $this->Link("show/".self::$currentLocale."/".str_replace(DIRECTORY_SEPARATOR, '$', $folder)),
-				'Name' => $folder
+				'Name' => $folder,
+				'Current' => $folder == self::$currentModule ? true : false
 			)));
 
 		}
-		return $modules;		
-	}
-	
-	public function TranslationForm() {
-		return new Form (
-			$this,
-			"TranslationForm",
-			new FieldSet(),
-			new FieldSet(
-				new FormAction('doSave', _t('LangEditor.SAVE','Save'))
-			)
-		);
+		return $modules;
 	}
 	
 	public function NamespaceDropdown() {
-		if($this->Namespaces) {
-			$map = array();
-			foreach($this->Namespaces as $n) {
-				$map[$n->Namespace][$n->Namespace];
-			}
+		if(!$this->NamespaceDropdownOptions) {
+			$this->loadTranslationData();
 		}
+		if($this->NamespaceDropdownOptions) {
+			$dropdown = new DropdownField('Namespace', _t('LangEditor.NAMESPACE','Namespace'), $this->NamespaceDropdownOptions);
+			$dropdown->setEmptyString('-- '._t('LangEditor.SHOWALLNAMESPACES','Show all namespaces').' --');
+			return $dropdown->forTemplate();
+		}
+		return null;
 	}
 	
 	public function CreateTranslationForm() {
-		$r = Controller::curr()->getRequest();
-		if($r && $r->param('ID') && $r->param('OtherID')) {
-			self::$currentLocale = $r->param('ID');
-			self::$currentModule = str_replace('$', DIRECTORY_SEPARATOR, $r->param('OtherID'));
-		}
 		$from_languages = array();
-		$to_languages =  i18n::get_common_locales();
+		$to_languages = i18n::get_common_languages();
 		if (dataObject::has_extension('SiteTree', 'Translatable')) {
-			$common_locales = $to_languages;
+			$common_languages = $to_languages;
 			$to_languages = array();
 			foreach(Translatable::get_allowed_locales() as $locale) {
-				$to_languages[$locale] = $common_locales[$locale];
+				if (!in_array($locale, self::$exclude_locales)) {
+					$language = self::get_lang_from_locale($locale);
+					$to_languages[$language] = $common_languages[$language];
+				}
 			}
 		}
 		if($languages = $this->getLanguages()) {
@@ -169,12 +299,12 @@ class LangEditor extends LeftAndMain {
 		$f = new Form(
 			$this,
 			"CreateTranslationForm",
-			new FieldSet (
-				new DropdownField('LanguageFrom',_t('LangEditor.TRANSLATEFROM','From'), $from_languages, i18n::get_locale()),
+			new FieldList (
+				new DropdownField('LanguageFrom',_t('LangEditor.TRANSLATEFROM','From'), $from_languages, self::$currentLocale),
 				$d = new DropdownField('LanguageTo',_t('LangEditor.TRANSLATETO','To'),$to_languages),
 				new HiddenField('Module', 'Module', self::$currentModule)
 			),
-			new FieldSet (
+			new FieldList (
 				new FormAction('doCreate',_t('LangEditor.CREATE','Create'))
 			)
 		);
@@ -182,26 +312,23 @@ class LangEditor extends LeftAndMain {
 		return $f;
 	}
 	
-	public function getTranslations() {
-		$namespaces = new DataObjectSet();
-		$lang_file = self::lang_file(self::$currentModule, self::$currentLocale);
+/*	public function getTranslations() {
+		$namespaces = new ArrayList();
+		$lang_file = self::get_lang_file(self::$currentModule, self::$currentLocale);
 		if(!file_exists($lang_file)) return "$lang_file does not exist!";
 		if(!is_readable($lang_file)) return "$lang_file is not readable!";
 		if(!is_writable($lang_file)) return "$lang_file is not writable!";
 		
-		$code = file_get_contents($lang_file)." return \$lang;";
-		$code = str_replace(
-			array('<?php','<?','?>','global $lang;'), 
-			array('','','','$lang = array();'),
-			$code
-		);
-
+		// Use the Zend copy of this script to prevent class conflicts when RailsYaml is included
+		require_once 'thirdparty/zend_translate_railsyaml/library/Translate/Adapter/thirdparty/sfYaml/lib/sfYaml.php';
+		
+		$temp_lang = sfYaml::load($lang_file);
+		
 		$map = array();
-		$temp_lang = eval($code);
 		if(is_array($temp_lang) && isset($temp_lang[self::$currentLocale])) {
 			foreach($temp_lang[self::$currentLocale] as $namespace => $array_of_entities) {
-				$map[self::clean_namespace($namespace)] = $namespace;
-				$entities = new DataObjectSet();
+				$map[$namespace] = $namespace;
+				$entities = new ArrayList();
 				if(is_array($array_of_entities)) {
 					foreach($array_of_entities as $entity => $str) {
 						if (is_array($str)) {
@@ -217,7 +344,6 @@ class LangEditor extends LeftAndMain {
 				
 				$namespaces->push(new ArrayData(array(
 					'Namespace' => $namespace,
-					'NamespaceID' => self::clean_namespace($namespace),
 					'Entities' => $entities
 				)));
 			}
@@ -233,76 +359,39 @@ class LangEditor extends LeftAndMain {
 			'SelectedModule' => self::$currentModule
 		);
 	}
-	
-	public function index() {
+*/	
+	public function index($request) {
 		self::$currentLocale = i18n::get_locale();
 		self::$currentModule = project();
 		self::check_module_existing_lang();
-		return $this->getTranslations();
+		return parent::index($request);
 	}
 	
-	public function show(SS_HTTPReqest $r) {
-		if(!self::$currentLocale = $r->param('ID')) {
-			return $this->httpError(404);
-		}
-		if(!self::$currentModule = str_replace('$', DIRECTORY_SEPARATOR, $r->param('OtherID'))) {
-			return $this->httpError(404);
-		}
-		self::check_module_existing_lang();
-		$data = $this->getTranslations();
-		return $this->customise($data)->renderWith('Translations');
-	}
-	
-	public function updatemodules(SS_HTTPReqest $r) {
-		if(!self::$currentLocale = $r->param('ID')) {
-			return $this->httpError(404);
-		}
-		if(!self::$currentModule = str_replace('$', DIRECTORY_SEPARATOR, $r->param('OtherID'))) {
-			return $this->httpError(404);
-		}
-		self::check_module_existing_lang();
-		$data = $this->getModules();
-		return $this->customise($data)->renderWith('ModuleList');
-	}
-	
-	public function updatelanguages(SS_HTTPReqest $r) {
-		if(!self::$currentLocale = $r->param('ID')) {
-			return $this->httpError(404);
-		}
-		if(!self::$currentModule = str_replace('$', DIRECTORY_SEPARATOR, $r->param('OtherID'))) {
-			return $this->httpError(404);
-		}
-		self::check_module_existing_lang();
-		$data = $this->getLanguages();
-		return $this->customise($data)->renderWith('LanguageList');
-	}
-	
-	public function updatecreateform(SS_HTTPReqest $r) {
-		if(!self::$currentLocale = $r->param('ID')) {
-			return $this->httpError(404);
-		}
-		if(!self::$currentModule = str_replace('$', DIRECTORY_SEPARATOR, $r->param('OtherID'))) {
-			return $this->httpError(404);
-		}
-		self::check_module_existing_lang();
-		$data = $this->CreateTranslationForm();
-		return $this->customise($data)->renderWith('CreateTranslationForm');
+	public function show($request) {
+		return $this;
 	}
 	
 	public function doSave($data, $form) {
 		if(isset($data['t']) && is_array($data['t'])) {
-			$output = "<?php\n\nglobal \$lang;\n\n";
-			foreach($data['t'] as $locale => $array_of_namespaces) {
-				foreach($array_of_namespaces as $namespace => $array_of_entities) {
-					foreach($array_of_entities as $entity => $translation) {
-						$output .= "\$lang['$locale']['$namespace']['$entity'] = '".addslashes($translation)."';\n";
-					}
-				}			
-			}
-			$fh = fopen(self::lang_file($data['Module'], reset(array_keys($data['t']))),"w");
-			fwrite($fh, $output);
-			fclose($fh);
-			return new SS_HTTPResponse(_t('LangEditor.SAVED','Saved'),200);
+			
+			// Use the Zend copy of this script to prevent class conflicts when RailsYaml is included
+			require_once 'thirdparty/zend_translate_railsyaml/library/Translate/Adapter/thirdparty/sfYaml/lib/sfYaml.php';
+		
+			$new_content = sfYaml::dump($data['t'], 99);
+			
+			$lang = array_keys($data['t']);
+			if ($lang) $lang = $lang[0];
+			
+			$new_file = self::get_lang_file($data['Module'], $lang);
+			if($fh = fopen($new_file, "w")) {
+				fwrite($fh, $new_content);
+				fclose($fh);
+				$message = _t('LangEditor.SAVED','Saved');
+			} else {
+				$message = "Cannot write language file!";
+			}			
+			
+			return new SS_HTTPResponse($message,200);
 		}
 	}
 	
@@ -314,65 +403,47 @@ class LangEditor extends LeftAndMain {
 		self::$currentLocale = $data['LanguageTo'];
 		self::$currentModule = $data['Module'];
 		
-		$to = self::lang_file($data['Module'], $data['LanguageTo']);
-		$from = self::lang_file($data['Module'], $data['LanguageFrom']);
+		$to = self::get_lang_file($data['Module'], $data['LanguageTo']);
+		$from = self::get_lang_file($data['Module'], $data['LanguageFrom']);
 		
 		// sanity check
 		if(!file_exists($from)) {
 			return new SS_HTTPResponse(_t('LangEditor.TOFILEMISSING','The from language does not exist!'),500);
 		}
 		
+		// Use the Zend copy of this script to prevent class conflicts when RailsYaml is included
+		require_once 'thirdparty/zend_translate_railsyaml/library/Translate/Adapter/thirdparty/sfYaml/lib/sfYaml.php';
+		
+		$old_data = sfYaml::load($from);
+		
 		// get content of source file and replace language
-		$new_contents = str_replace(
-			"['".$data['LanguageFrom']."']",
-			"['".$data['LanguageTo']."']",
-			file_get_contents($from)
-		);
+		$new_data = array();
+		$new_data[$data['LanguageTo']] = $old_data[$data['LanguageFrom']];
 				
 		// merge data if target file exists
 		if (file_exists($to)) {
 			
 			$message = _t('LangEditor.MERGED','Merged');
 			
-			// get array of existing target
-			$existing_code = file_get_contents($to)." return \$lang;";
-			$existing_code = str_replace(
-				array('<?php','<?','?>','global $lang;'), 
-				array('','','','$lang = array();'),
-				$existing_code
-			);
-			$existing_array = eval($existing_code);
+			$existing_data = sfYaml::load($to);
 			
-			// get array of new content
-			$new_code = $new_contents." return \$lang;";
-			$new_code = str_replace(
-				array('<?php','<?','?>','global $lang;'), 
-				array('','','','$lang = array();'),
-				$new_code
-			);
-			$new_array = eval($new_code);
-			
-			if(is_array($existing_array) && isset($existing_array[self::$currentLocale]) 
-				&& is_array($new_array) && isset($new_array[self::$currentLocale])) 
+			if(is_array($existing_data) && isset($existing_data[self::$currentLocale]) 
+				&& is_array($new_data) && isset($new_data[self::$currentLocale])) 
 			{
-				$new_array = array_replace_recursive($new_array, $existing_array);
-			}
-			
-			$new_contents = "<?php\n\nglobal \$lang;\n\n";
-			foreach($new_array as $locale => $array_of_namespaces) {
-				foreach($array_of_namespaces as $namespace => $array_of_entities) {
-					foreach($array_of_entities as $entity => $translation) {
-						$new_contents .= "\$lang['$locale']['$namespace']['$entity'] = '".addslashes($translation)."';\n";
-					}
-				}			
+				$new_data = array_replace_recursive($new_data, $existing_data);
 			}
 			
 		}
 		
 		// write new content into target file
-		$fh = fopen($to,"w");
-		fwrite($fh, $new_contents);
-		fclose($fh);
+		$new_content = sfYaml::dump($new_data, 99);
+		$new_file = self::get_lang_file(self::$currentModule, self::$currentLocale);
+		if($fh = fopen($new_file, "w")) {
+			fwrite($fh, $new_content);
+			fclose($fh);
+		} else {
+			$message = "Cannot write language file!";
+		}
 		
 		//$langs = $this->getLanguages();
 		//return $this->customise($langs)->renderWith('LanguageList');

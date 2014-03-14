@@ -1,0 +1,20 @@
+en:
+  LangEditor:
+    AVAILABLELANGUAGES: "Available languages"
+    AVAILABLEMODULES: "Available modules"
+    CREATE: "Create"
+    CREATED: "Created"
+    CREATENEW: "Create new translation file"
+    EDITING: "Editing"
+    MERGED: "Merged"
+    MENUTITLE: 'Translator'
+    NAMESPACE: "Namespace"
+    PLEASESELECT: "please select"
+    PLEASESELECTMODULEANDLANGUAGE: "Please select a module and a language from the left."
+    SAVE: "Save"
+    SAVED: "Saved"
+    SEARCH: "Search"
+    SHOWALLNAMESPACES: "Show all namespaces"
+    TOFILEMISSING: "The from language does not exist!"
+    TRANSLATEFROM: "From"
+    TRANSLATETO: "To"

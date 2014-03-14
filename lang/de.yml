@@ -1,0 +1,20 @@
+de:
+  LangEditor:
+    AVAILABLELANGUAGES: "Vorhandene Sprachen"
+    AVAILABLEMODULES: "Vorhandene Module"
+    CREATE: "Erstellen"
+    CREATED: "Erstellt"
+    CREATENEW: "Neue Sprachdatei erzeugen"
+    EDITING: "In Arbeit"
+    MERGED: "Zusammengeführt"
+    MENUTITLE: 'Übersetzer'
+    NAMESPACE: "Namensraum"
+    PLEASESELECT: "bitte wählen"
+    PLEASESELECTMODULEANDLANGUAGE: "Bitte wählen Sie links ein Modul und eine Sprache."
+    SAVE: "Speichern"
+    SAVED: "Gespeichert"
+    SEARCH: "Suchen"
+    SHOWALLNAMESPACES: "Alle Namensräume anzeigen"
+    TOFILEMISSING: "Die Ausgangssprache existiert nicht!"
+    TRANSLATEFROM: "Von"
+    TRANSLATETO: "Nach"
