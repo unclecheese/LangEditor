@@ -8,7 +8,7 @@ Gives a CMS user the ability to change the static language files and translate t
 
 ## Requirements
 
-SilverStripe CMS 3.0.*
+SilverStripe CMS ~3.1
 
 ## Installation
 * Download the module
