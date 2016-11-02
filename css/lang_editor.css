@@ -1,8 +1,19 @@
 /* header */
 .cms-content-header .cms-content-header-filter {
-    float: right;
-    line-height: 40px;
-    padding-right: 24px;
+	float: right;
+	/*line-height: 40px;*/
+	padding-right: 24px;
+}
+.cms-content-header .cms-content-header-filter .inline-search,
+.cms-content-header .cms-content-header-filter .select-search {
+	display: inline-block;
+}
+.cms-content-header .cms-content-header-filter .inline-search label {
+	text-align: right;
+}
+.cms-content-header .cms-content-header-filter .select-search {
+	margin-left: 10px;
+	min-width: 250px;
 }
 #namespace_dropdown {
 	float: right;
@@ -13,22 +24,22 @@
 	padding: 2px;
 }
 #Namespace label {
-    float: none;
-    margin: 0;
-    display: none;
+	float: none;
+	margin: 0;
+	display: none;
 }
 #translationsearch {
-    float: right;
-    margin: 0 0 0 2em;
+	float: right;
+	margin: 0 0 0 2em;
 }
 #translationsearch input {
-    padding: 2px;
-    border: 1px solid #999;
-    color: #666;
+	padding: 2px;
+	border: 1px solid #999;
+	color: #666;
 }
 #translationsearch label {
-    margin-right: 10px;
-    font-size: 12px;
+	margin-right: 10px;
+	font-size: 12px;
 }
 
 /* filter west */
@@ -89,18 +100,13 @@
 }
 
 /* edit form */
-div.entity {
-	border-bottom: 1px solid #ddd;
-	overflow: hidden;
-	padding: 2px;
-}
 div.entity_label {
 	float: left;
 	width: 25%;
 	margin-top: 3px;
 }
 div.entity_field {
-	float: left;
+	float: right;
 	width: 70%;
 }
 div.entity_field input {
@@ -117,4 +123,8 @@ div.entity_field input {
 	text-decoration: none;
 	color: #666;
 	font-size: 14px;
+}
+.actions-without-padding .Actions {
+	padding-left: 0;
+	padding-right: 0;
 }

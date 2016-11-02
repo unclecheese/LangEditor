@@ -22,7 +22,9 @@ You can filter the language files by module and language with the filter options
 
 You can copy a language file into a new language using the copy function. After copying the file you can translate its content.
 
-The setting for `Translatable::get_allowed_locales()` is used to determine what languages can be created.
+If you use Translatable extension, the setting for `Translatable::get_allowed_locales()` is used to determine what languages can be created.
+
+If you use Fluent extension, the setting for `Fluent::locales()` is used to determine what languages can be created.
 
 To hide certain modules or languages from translation add the following to your _config:
 

@@ -1,0 +1,14 @@
+v3.0:
+- added support for Fluent extension
+- added support for Permission Provider to shown permission in the Security section
+- added Include modules property, if you want edit module which doesn't have f.e. _config.php, etc. which is required by older version of this module
+- added nicely Cascade Style Sheets (tested on current latest version SS v3.4.1)
+- added Slovak language
+- fixed bug with set null to currentLocale if you don't use any supported Translation extensions
+- fixed bug with submit changes and must confirm warning dialog about leave the page
+
+v2.0:
+- ADD changes for SS 3.0
+
+v1.0:
+- Translation of all modules
