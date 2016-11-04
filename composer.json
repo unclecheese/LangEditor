@@ -3,10 +3,19 @@
 	"description": "CMS module to edit static language files.",
 	"type": "silverstripe-module",
 	"keywords": ["silverstripe", "languages"],
-	"authors": [{
-		"name": "Uncle Cheese",
-		"email": "unclecheese@leftandmain.com"
-	}],
+	"authors": [
+		{
+			"name": "Uncle Cheese",
+			"email": "unclecheese@leftandmain.com",
+			"role": "Developer, Author"
+		},
+		{
+			"name": "Lukáš Strišovský",
+			"email": "strisovsky.lukas@gmail.com",
+			"homepage": "https://www.striky.sk/",
+			"role": "Developer, Contributor"
+		}
+	],
 	"require": {
 		"silverstripe/framework": "~3.1",
 		"silverstripe/cms": "~3.1"

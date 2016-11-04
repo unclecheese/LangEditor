@@ -1,7 +1,7 @@
 (function($) {
 	$.entwine.warningLevel = $.entwine.WARN_LEVEL_BESTPRACTISE;
 	$.entwine('ss', function($) {
-	
+
 		$('#Form_CreateTranslationForm').entwine({
 			onsubmit: function(){
 				var $t = $(this);
@@ -21,11 +21,12 @@
 				return false;
 			}
 		});
-		
+
 		$('#Form_TranslationForm').entwine({
 			onsubmit: function(e) {
 				$('.cms-content').addClass('loading');
 				$t = $(this);
+				$t.removeClass('changed');
 				$.post(
 					$t.attr('action'),
 					$t.serialize(),
@@ -39,8 +40,8 @@
 				return false;
 			}
 		});
-		
-		$('#Namespace').entwine({
+
+		$('#Form_LangEditor_Search .select-search select').entwine({
 			onchange: function(){
 				if($(this).val().length > 0) {
 					$('.namespace').hide();
@@ -50,24 +51,24 @@
 				}
 			}
 		});
-	
+
 		var timeout = false;
-	
-		$('#translationsearch input').entwine({
+
+		$('#Form_LangEditor_Search .inline-search input').entwine({
 			onkeyup: function(){
 				if(timeout) window.clearTimeout(timeout);
-				s = $(this).val();		
+				s = $(this).val();
 				timeout = window.setTimeout(function() {
 					$('.entity').hide();
 					$('.entity').each(function() {
 						reg = new RegExp(s,"i");
-						if($(this).find('.entity_label').text().match(reg) || $(this).find('.entity_field input').val().match(reg)) {
+						if($(this).find('label').text().match(reg) || $(this).find('.entity_field input').val().match(reg)) {
 							$(this).show();
 						}
-					});		
+					});
 				},150);
-			}					
+			}
 		});
-		
-    });
+
+	});
 })(jQuery);

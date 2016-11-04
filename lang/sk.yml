@@ -1,0 +1,21 @@
+sk:
+  AssetAdmin_Tools:
+    FILTER: Filter
+  LangEditor:
+    AVAILABLELANGUAGES: 'Dostupné lokalizácie'
+    AVAILABLEMODULES: 'Dostupné moduly'
+    CREATE: Vytvoriť
+    CREATED: Vytvorené
+    CREATENEW: 'Vytvoriť nový súbor prekladu'
+    EDITING: Editácia
+    MENUTITLE: 'Editor prekladov'
+    MERGED: Zlúčené
+    PLEASESELECT: 'Prosím vyberte'
+    SAVE: Uložiť
+    SAVED: Uložené
+    SEARCH: Vyhľadať
+    SHOWALLNAMESPACES: 'Zobraziť všetky skratky'
+    TOFILEMISSING: 'Zdrojová lokalizácia neexistuje!'
+    TRANSLATEFROM: Z
+    TRANSLATETO: Do
+    NAMESPACE: Skratka

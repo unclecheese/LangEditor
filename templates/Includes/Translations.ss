@@ -1,8 +1,8 @@
-<% if Namespaces %>
+<% if $Namespaces %>
 	<div id="namespaces">
-		 <% loop Namespaces %>
+		 <% loop $Namespaces %>
 			 <div class="namespace" id="namespace-$Namespace">
-				<% loop Entities %>
+				<% loop $Entities %>
 					<div class="entity">
 						<div class="entity_label">{$Namespace}.{$Entity}</div>
 						<div class="entity_field">$EntityField.Field</div>
