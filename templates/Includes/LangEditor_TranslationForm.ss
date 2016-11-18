@@ -14,7 +14,7 @@
                         <div class="namespace" id="namespace-$Namespace">
 							<% loop $Entities %>
                                 <div class="field noborder entity">
-                                    <label class="left">{$Namespace}.{$Entity}</label>
+                                    <label class="left" title="{$Namespace}.{$Entity}">{$Namespace}.{$Entity}</label>
                                     <div class="entity_field">$EntityField.Field</div>
                                 </div>
 							<% end_loop %>
