@@ -57,7 +57,7 @@ class LangEditor extends LeftAndMain implements PermissionProvider {
     }
 
     public static function check_module_existing_lang() {
-        if (!is_file(self::get_lang_file(self::$currentModule, static::config()->currentLocale))) {
+        if (!is_file(self::get_lang_file(static::config()->currentModule, static::config()->currentLocale))) {
             $langs = self::getLanguages();
             if($langs->First()){    // We must have set some language
                 Config::inst()->update(__CLASS__, 'currentLocale', $langs->First()->Locale);
@@ -81,10 +81,11 @@ class LangEditor extends LeftAndMain implements PermissionProvider {
 
         $r = $this->request; //Controller::curr()->getRequest();
         Config::inst()->update(__CLASS__, 'currentLocale', i18n::get_locale());
-        self::$currentModule = project();
+        Config::inst()->update(__CLASS__, 'currentModule', project());
+
         if($r && $r->param('ID') && $r->param('OtherID')) {
             Config::inst()->update(__CLASS__, 'currentLocale', $r->param('ID'));
-            self::$currentModule = str_replace('$', DIRECTORY_SEPARATOR, $r->param('OtherID'));
+            Config::inst()->update(__CLASS__, 'currentModule', str_replace('$', DIRECTORY_SEPARATOR, $r->param('OtherID')));
         }
 
         self::check_module_existing_lang();
@@ -137,14 +138,14 @@ class LangEditor extends LeftAndMain implements PermissionProvider {
         $form->setTemplate($this->getTemplatesWithSuffix('_TranslationForm'));
         $form->setAttribute('data-pjax-fragment', 'CurrentForm');
         $form->Namespaces = $this->Namespaces;
-        $form->SelectedModule = self::$currentModule;
+        $form->SelectedModule = static::config()->currentModule;
         $form->unsetValidator();
         return $form;
     }
 
     public function loadTranslationData() {
         $namespaces = new ArrayList();
-        $lang_file = self::get_lang_file(self::$currentModule, static::config()->currentLocale);
+        $lang_file = self::get_lang_file(static::config()->currentModule, static::config()->currentLocale);
 
         // Use the Zend copy of this script to prevent class conflicts when RailsYaml is included
         require_once 'thirdparty/zend_translate_railsyaml/library/Translate/Adapter/thirdparty/sfYaml/lib/sfYaml.php';
@@ -185,7 +186,7 @@ class LangEditor extends LeftAndMain implements PermissionProvider {
         $items = parent::Breadcrumbs(true);
         $items->push(
             new ArrayData(array(
-                'Title' => _t('LangEditor.EDITING','Editing').": ".self::$currentModule.", ".static::config()->currentLocale,
+                'Title' => _t('LangEditor.EDITING','Editing').": ".static::config()->currentModule.", ".static::config()->currentLocale,
                 'Link' => false
             ))
         );
@@ -195,12 +196,12 @@ class LangEditor extends LeftAndMain implements PermissionProvider {
 
     public static function getLanguages() {
         $langs = new ArrayList();
-        if($files = glob(self::get_lang_dir(self::$currentModule).DIRECTORY_SEPARATOR."*.yml")) {
+        if($files = glob(self::get_lang_dir(static::config()->currentModule).DIRECTORY_SEPARATOR."*.yml")) {
             foreach($files as $file) {
                 $label = basename($file,".yml");
                 if (!in_array($label, static::config()->exclude_locales)) {
                     $langs->push(new ArrayData(array(
-                        'Link' => Director::baseURL().'admin/'.static::config()->url_segment.'/show/'.$label.'/'.str_replace(DIRECTORY_SEPARATOR, '$', self::$currentModule),
+                        'Link' => Director::baseURL().'admin/'.static::config()->url_segment.'/show/'.$label.'/'.str_replace(DIRECTORY_SEPARATOR, '$', static::config()->currentModule),
                         'Locale' => $label,
                         'Name' => i18n::get_language_name(self::get_lang_from_locale($label)),
                         'Current' => $label == static::config()->currentLocale ? true : false
@@ -259,7 +260,7 @@ class LangEditor extends LeftAndMain implements PermissionProvider {
             $modules->push(new ArrayData(array(
                 'Link' => $this->Link("show/".static::config()->currentLocale."/".str_replace(DIRECTORY_SEPARATOR, '$', $folder)),
                 'Name' => $folder,
-                'Current' => $folder == self::$currentModule ? true : false
+                'Current' => $folder == static::config()->currentModule ? true : false
             )));
 
         }
@@ -333,7 +334,7 @@ class LangEditor extends LeftAndMain implements PermissionProvider {
             new FieldList (
                 $languageFrom = new DropdownField('LanguageFrom',_t('LangEditor.TRANSLATEFROM','From'), $from_languages, static::config()->currentLocale),
                 $languageTo = new DropdownField('LanguageTo',_t('LangEditor.TRANSLATETO','To'),$to_languages),
-                new HiddenField('Module', 'Module', self::$currentModule)
+                new HiddenField('Module', 'Module', static::config()->currentModule)
             ),
             new FieldList (
                 $doCreate = new FormAction('doCreate',_t('LangEditor.CREATE','Create'))
@@ -401,7 +402,7 @@ class LangEditor extends LeftAndMain implements PermissionProvider {
     */
     public function index($request) {
         Config::inst()->update(__CLASS__, 'currentLocale', i18n::get_locale());
-        self::$currentModule = project();
+        Config::inst()->update(__CLASS__, 'currentModule', project());
         self::check_module_existing_lang();
         return parent::index($request);
     }
@@ -440,7 +441,7 @@ class LangEditor extends LeftAndMain implements PermissionProvider {
         $message = _t('LangEditor.CREATED','Created');
 
         Config::inst()->update(__CLASS__, 'currentLocale', $data['LanguageTo']);
-        self::$currentModule = $data['Module'];
+        Config::inst()->update(__CLASS__, 'currentModule', $data['Module']);
 
         $to = self::get_lang_file($data['Module'], $data['LanguageTo']);
         $from = self::get_lang_file($data['Module'], $data['LanguageFrom']);
@@ -476,7 +477,7 @@ class LangEditor extends LeftAndMain implements PermissionProvider {
 
         // write new content into target file
         $new_content = sfYaml::dump($new_data, 99);
-        $new_file = self::get_lang_file(self::$currentModule, static::config()->currentLocale);
+        $new_file = self::get_lang_file(static::config()->currentModule, static::config()->currentLocale);
         if($fh = fopen($new_file, "w")) {
             fwrite($fh, $new_content);
             fclose($fh);
