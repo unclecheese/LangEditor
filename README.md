@@ -8,7 +8,7 @@ Gives a CMS user the ability to change the static language files and translate t
 
 ## Requirements
 
-SilverStripe CMS ~3.1
+SilverStripe CMS ~3.x-dev / 3.6.x-dev
 
 ## Installation
 * Download the module
@@ -29,14 +29,26 @@ If you use Fluent extension, the setting for `Fluent::locales()` is used to dete
 To hide certain modules or languages from translation add the following to your _config:
 
 ```
-LangEditor::$exclude_modules = array(
-	'cms',
-	'framework',
-	'[module folder]',
-	...
-);
-LangEditor::$exclude_locales = array(
-	'en_GB',
-);
+Config::inst()->update('LangEditor', 'exclude_modules', [
+    'cms',
+    'framework',
+    '[module folder]',
+]);
+
+Config::inst()->update('LangEditor', 'exclude_locales', [
+    'en_GB',
+]);
+```
+
+Or via yaml config file:
+
+```
+LangEditor:
+    exclude_modules:
+        - 'cms'
+        - 'framework'
+        - '[module folder]'
+    exclude_locales:
+        - 'en_GB'
 ```
 
