@@ -1,5 +1,5 @@
 {
-	"name": "silverstripe/langeditor",
+	"name": "unclecheese/silverstripe-langeditor",
 	"description": "CMS module to edit static language files.",
 	"type": "silverstripe-module",
 	"keywords": ["silverstripe", "languages"],
