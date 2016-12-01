@@ -6,6 +6,9 @@ v3.0:
 - added Slovak language
 - fixed bug with set null to currentLocale if you don't use any supported Translation extensions
 - fixed bug with submit changes and must confirm warning dialog about leave the page
+- added Lithuanian language
+- prepared module for latest 3.* SilverStripe versions and modified composer
+- added title's for namespaces
 
 v2.0:
 - ADD changes for SS 3.0
