@@ -308,7 +308,7 @@ class LangEditor extends LeftAndMain implements PermissionProvider {
         $from_languages = [];
         $to_languages = i18n::get_common_languages();
 
-        if (dataObject::has_extension('SiteTree', 'Translatable')) {
+        if (DataObject::has_extension('SiteTree', 'Translatable')) {
             $common_languages = $to_languages;
             $to_languages = [];
             foreach (Translatable::get_allowed_locales() as $locale) {
@@ -319,15 +319,19 @@ class LangEditor extends LeftAndMain implements PermissionProvider {
             }
         }
 
-        if (dataObject::has_extension('SiteTree', 'FluentSiteTree')) {
+        if (DataObject::has_extension('SiteTree', 'FluentSiteTree')) {
             $common_languages = $to_languages;
             $to_languages = [];
             foreach (Fluent::locales() as $locale) {
                 $explode = explode('_', $locale);
-                $locale = $explode[0];
+                $langID = $explode[0];
                 if (! in_array($locale, static::config()->exclude_locales)) {
-                    $language = self::get_lang_from_locale($locale);
-                    $to_languages[$language] = $common_languages[$language];
+                    $language = self::get_lang_from_locale($langID);
+                    if(isset($common_languages[$locale])) {
+                    	$to_languages[$locale] = $common_languages[$locale];
+                    } else {
+                    	$to_languages[$language] = $common_languages[$language];
+                    }
                 }
             }
         }
